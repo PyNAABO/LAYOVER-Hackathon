@@ -162,11 +162,17 @@ function wire(ordered: Gift[]): void {
   const photo = document.getElementById('photo') as HTMLInputElement;
   photo.onchange = async () => {
     const f = photo.files?.[0];
-    if (f) {
-      if (pendingPhoto.startsWith('blob:')) URL.revokeObjectURL(pendingPhoto);
-      pendingPhoto = await thumbnail(f);
-      render();
+    if (!f) {
+      // chooser cancelled: drop any staged photo so state can't drift
+      if (pendingPhoto) {
+        pendingPhoto = '';
+        render();
+      }
+      return;
     }
+    if (pendingPhoto.startsWith('blob:')) URL.revokeObjectURL(pendingPhoto);
+    pendingPhoto = await thumbnail(f);
+    render();
   };
   (document.getElementById('pickBtn') as HTMLButtonElement).onclick = () => photo.click();
 
@@ -210,6 +216,12 @@ function wire(ordered: Gift[]): void {
       render();
     };
     (li.querySelector('.pr') as HTMLInputElement).oninput = (e) => {
+      g.priority = Number((e.target as HTMLInputElement).value);
+      render();
+    };
+    // A slider nudged by keyboard fires input then change; input already
+    // repacks, so change only needs to cover engines that skip input.
+    (li.querySelector('.pr') as HTMLInputElement).onchange = (e) => {
       g.priority = Number((e.target as HTMLInputElement).value);
       render();
     };
