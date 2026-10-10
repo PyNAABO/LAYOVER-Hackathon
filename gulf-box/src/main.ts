@@ -38,7 +38,8 @@ function render(): void {
   app.innerHTML = `
   <header>
     <div>
-      <h1>🧳 Gulf Box</h1>
+      <div class="route">DXB → CCJ · one bag</div>
+      <h1>Gulf Box</h1>
       <p>Fit every gift into one baggage allowance.</p>
     </div>
     <button id="installBtn" hidden>Install app</button>
@@ -61,10 +62,13 @@ function render(): void {
     <p class="fine">Typical economy allowances — confirm against your e-ticket.</p>
   </section>
 
-  <section class="card">
+  <section class="case">
+    <div class="handle"></div>
+    <div class="case-body">
     <h2>Suitcase (${ordered.length})</h2>
     <div class="grid" id="grid">
       ${ordered.map((g) => `<div class="tile" draggable="true" data-id="${g.id}">${tileArt(g)}<b>${esc(g.name)}</b><span>${g.weightKg.toFixed(1)} kg · ★${g.priority}</span></div>`).join('') || '<p class="empty">Nothing fits — raise the limit or drop an item.</p>'}
+    </div>
     </div>
   </section>
 
@@ -83,13 +87,14 @@ function render(): void {
         <span class="thumb">${tileArt(g)}</span>
         <input class="nm" value="${esc(g.name)}" maxlength="40">
         <input class="wt" type="number" min="0.1" step="0.1" value="${g.weightKg}">
-        <label>★<input class="pr" type="range" min="1" max="5" value="${g.priority}"></label>
+        <label>★<input class="pr" type="range" min="1" max="5" value="${g.priority}"><span class="prv">${g.priority}</span></label>
         <button class="rm" title="Remove">✕</button>
       </li>`).join('')}
     </ul>
   </section>
 
   ${leftOut.length ? `<section class="card warn">
+    <div class="stamp">Not packed</div>
     <h2>Left out (${leftOut.length})</h2>
     <ul class="leftout">
       ${leftOut.map((g) => `<li><span class="thumb">${tileArt(g)}</span><div><b>${esc(g.name)}</b> — ${g.weightKg.toFixed(1)} kg<span class="sug">${esc(suggest(g))}</span></div></li>`).join('')}
