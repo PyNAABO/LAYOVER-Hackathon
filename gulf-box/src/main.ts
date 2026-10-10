@@ -180,7 +180,7 @@ function wire(ordered: Gift[]): void {
     const name = (document.getElementById('gname') as HTMLInputElement).value.trim();
     const wt = parseFloat((document.getElementById('gweight') as HTMLInputElement).value);
     if (!name || !(wt > 0)) return;
-    const g = makeGift(name, Math.round(wt * 10) / 10, Number(gprio.value));
+    const g = makeGift(name, wt, Number(gprio.value));
     if (pendingPhoto) {
       g.photo = pendingPhoto;
       pendingPhoto = '';
@@ -212,7 +212,7 @@ function wire(ordered: Gift[]): void {
     };
     (li.querySelector('.wt') as HTMLInputElement).onchange = (e) => {
       const v = parseFloat((e.target as HTMLInputElement).value);
-      if (v > 0) g.weightKg = Math.round(v * 10) / 10;
+      if (v > 0) g.weightKg = Math.max(0.1, Math.round(v * 10) / 10);
       render();
     };
     (li.querySelector('.pr') as HTMLInputElement).oninput = (e) => {

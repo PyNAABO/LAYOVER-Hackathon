@@ -33,7 +33,10 @@ export function makeGift(
   priority: number,
   emoji?: string,
 ): Gift {
-  return { id: `g${Date.now()}-${seq++}`, name, weightKg, priority, emoji };
+  // Knapsack works in 100 g units; anything lighter rounds to zero and would
+  // display as a 0.0 kg gift. Clamp to one unit so small items still count.
+  const safe = Math.max(0.1, Math.round(weightKg * 10) / 10);
+  return { id: `${Date.now()}-${seq++}`, name, weightKg: safe, priority, emoji };
 }
 
 // Booth-ready demo list: totals ~23 kg against the 20 kg default,
