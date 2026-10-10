@@ -47,18 +47,22 @@ function render(): void {
 
   <section class="card">
     <h2>Allowance</h2>
-    <div class="row">
+    <div class="allow-grid">
+      <label class="fld"><span>Airline allowance</span>
       <select id="airline">
         ${AIRLINES.map(
           (a, i) =>
             `<option value="${i}" ${i === airlineIdx && customKg === null ? 'selected' : ''}>${esc(a.name)} — ${a.allowanceKg} kg</option>`,
         ).join('')}
       </select>
-      <label>Custom <input id="customKg" type="number" min="0" step="0.5" placeholder="kg" value="${customKg ?? ''}"></label>
+      </label>
+      <label class="fld"><span>Or your own limit</span>
+      <span class="kgwrap"><input id="customKg" type="number" min="0" step="0.5" placeholder="kg" value="${customKg ?? ''}"> kg</span>
+      </label>
     </div>
     <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
     <p class="total">${totalKg.toFixed(1)} / ${limit.toFixed(1)} kg packed
-    ${leftOut.length ? `· ${leftKg.toFixed(1)} kg left out` : '· everything fits ✓'}</p>
+    ${leftOut.length ? `· ${leftKg.toFixed(1)} kg left out` : `· ${(limit - totalKg).toFixed(1)} kg to spare <span class="stamp ok">All packed</span>`}</p>
     <p class="fine">Typical economy allowances — confirm against your e-ticket.</p>
   </section>
 

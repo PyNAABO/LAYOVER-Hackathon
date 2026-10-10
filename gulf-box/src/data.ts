@@ -17,13 +17,13 @@ export interface Airline {
 // Always confirm against the e-ticket; fares change the number.
 export const AIRLINES: Airline[] = [
   { name: 'Emirates — Saver', allowanceKg: 30, note: 'typical' },
-  { name: 'Qatar Airways — Classic', allowanceKg: 25, note: 'typical' },
-  { name: 'Etihad — Value', allowanceKg: 23, note: 'typical' },
-  { name: 'Oman Air — Economy', allowanceKg: 30, note: 'typical' },
-  { name: 'Air India — Economy', allowanceKg: 25, note: 'typical' },
-  { name: 'Air India Express — Economy', allowanceKg: 20, note: 'typical' },
-  { name: 'IndiGo Intl — Economy', allowanceKg: 20, note: 'typical' },
-  { name: 'SpiceJet Intl — Economy', allowanceKg: 20, note: 'typical' },
+  { name: 'Qatar Airways', allowanceKg: 25, note: 'typical' },
+  { name: 'Etihad', allowanceKg: 23, note: 'typical' },
+  { name: 'Oman Air', allowanceKg: 30, note: 'typical' },
+  { name: 'Air India', allowanceKg: 25, note: 'typical' },
+  { name: 'Air India Express', allowanceKg: 20, note: 'typical' },
+  { name: 'IndiGo Intl', allowanceKg: 20, note: 'typical' },
+  { name: 'SpiceJet Intl', allowanceKg: 20, note: 'typical' },
 ];
 
 let seq = 0;
