@@ -55,6 +55,10 @@ h2 { font: 700 19px Georgia, serif; margin: 0 0 10px; }
   margin-top: 16px;
 }
 .row, .addrow { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.addrow input { min-width: 0; }
+#gname { flex: 1 1 130px; }
+#gweight { flex: 0 1 78px; width: auto; }
+#gprio { flex: 1 1 90px; min-width: 70px; }
 input, select, button {
   font: inherit;
   color: var(--ink);
@@ -179,19 +183,27 @@ li.cut .status { color: var(--stamp); }
 .tile b { display: block; margin-top: 4px; }
 .tile span:last-child { color: var(--dim); font-size: 12px; font-family: ui-monospace, monospace; }
 
-ul.gifts, ul.leftout { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+/* `minmax(0, 1fr)` — without it the auto track takes its min-content width
+   and rows overflow the card on narrow phones. */
+ul.gifts, ul.leftout {
+  list-style: none; margin: 10px 0 0; padding: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px;
+}
 ul.gifts li, ul.leftout li {
   display: flex; gap: 8px; align-items: center;
   background: #fffdf6; border: 1.5px solid var(--line); border-radius: 6px; padding: 8px;
 }
-/* Narrow screens: three lines — [thumb · name · ✕] / [kg · ★ slider] / status.
-   `min-width: 0` is what stops the name input from shrinking to nothing. */
+/* Narrow screens: [thumb · name · kg · ✕] / [★ slider] / status.
+   `min-width: 0` is what lets the name input shrink instead of pushing ✕
+   onto its own line. Orders are distinct: label and status are both
+   full-width rows, so ✕ must have a lower order than label to stay on line 1. */
 ul.gifts li { flex-wrap: wrap; }
-ul.gifts .nm { flex: 1; min-width: 0; }
-ul.gifts li label { flex: 1 1 100%; display: flex; align-items: center; gap: 6px; order: 3; }
-ul.gifts .wt { order: 1; flex: none; width: 66px; }
-ul.gifts li .status { order: 2; flex: 1 1 100%; }
-ul.gifts li .rm { order: 3; flex: none; }
+ul.gifts .nm { flex: 1 1 60px; min-width: 0; }
+ul.gifts .wt { order: 1; flex: none; width: 62px; }
+ul.gifts li .rm { order: 2; flex: none; }
+ul.gifts li label { order: 3; flex: 1 1 100%; display: flex; align-items: center; gap: 6px; }
+ul.gifts li .status { order: 4; flex: 1 1 100%; }
+ul.gifts li .unpin { order: 5; flex: none; }
 
 /* Wide screens: one line. */
 @media (min-width: 560px) {
@@ -199,12 +211,23 @@ ul.gifts li .rm { order: 3; flex: none; }
   ul.gifts li label { flex: 1 1 110px; order: 0; }
   ul.gifts li .status { flex: none; order: 4; }
   ul.gifts li .rm { order: 5; }
-  ul.gifts .wt { width: 58px; flex: none; }
+  ul.gifts .wt { width: 58px; }
 }
 .thumb { width: 40px; height: 40px; flex: none; display: grid; place-items: center; font-size: 24px; }
 .thumb img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
 ul.gifts .nm { flex: 1; min-width: 0; }
 .prv { font: 700 13px ui-monospace, monospace; color: var(--dim); min-width: 12px; }
+.leftout li { flex-wrap: wrap; }
+.lobody { flex: 1 1 140px; min-width: 0; overflow-wrap: anywhere; }
+.lobody b { overflow-wrap: anywhere; }
+@media (max-width: 400px) {
+  .put { flex: 1 1 100%; margin-top: 4px; }
+}
+@media (max-width: 360px) {
+  body { padding: 14px 10px 36px; }
+  .card, .case-body { padding: 12px 10px; }
+  ul.gifts li, ul.leftout li { padding: 7px 6px; gap: 6px; }
+}
 .sug { display: block; color: #7a5c14; font-size: 13px; }
 .trade { display: block; color: var(--stamp); font-size: 12.5px; margin-top: 2px; }
 
