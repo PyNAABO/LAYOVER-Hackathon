@@ -131,6 +131,29 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .case-body h2 { color: #f0e7cf; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; }
 
+/* Reorder affordance: grip shows on hover/focus, arrow keys work too. */
+.tile { cursor: grab; position: relative; }
+.tile:active { cursor: grabbing; }
+.grip {
+  position: absolute; top: 3px; right: 5px;
+  font-size: 13px; color: var(--dim);
+  opacity: 0; transition: opacity 0.12s;
+}
+.tile:hover .grip, .tile:focus-visible .grip { opacity: 1; }
+.hint { color: var(--dim); font-size: 12.5px; margin: 12px 0 0; text-align: center; }
+
+/* Section heading with an inline action (Reset demo). */
+.rowhead { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.rowhead .ghost { font-size: 13px; padding: 5px 10px; font-weight: 600; }
+
+/* A gift the packer cut: dimmed, with an explicit status. */
+ul.gifts li.cut { opacity: 0.72; background: #f6f0e0; }
+.status {
+  font: 600 11.5px ui-monospace, monospace; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ok); flex: none;
+}
+li.cut .status { color: var(--stamp); }
+
 /* Luggage tags with punched holes */
 .tile {
   position: relative;
@@ -161,9 +184,23 @@ ul.gifts li, ul.leftout li {
   display: flex; gap: 8px; align-items: center;
   background: #fffdf6; border: 1.5px solid var(--line); border-radius: 6px; padding: 8px;
 }
+/* Narrow screens: three lines — [thumb · name · ✕] / [kg · ★ slider] / status.
+   `min-width: 0` is what stops the name input from shrinking to nothing. */
 ul.gifts li { flex-wrap: wrap; }
+ul.gifts .nm { flex: 1; min-width: 0; }
 ul.gifts li label { flex: 1 1 100%; display: flex; align-items: center; gap: 6px; order: 3; }
-ul.gifts li .rm { order: 2; }
+ul.gifts .wt { order: 1; flex: none; width: 66px; }
+ul.gifts li .status { order: 2; flex: 1 1 100%; }
+ul.gifts li .rm { order: 3; flex: none; }
+
+/* Wide screens: one line. */
+@media (min-width: 560px) {
+  ul.gifts li { flex-wrap: nowrap; }
+  ul.gifts li label { flex: 1 1 110px; order: 0; }
+  ul.gifts li .status { flex: none; order: 4; }
+  ul.gifts li .rm { order: 5; }
+  ul.gifts .wt { width: 58px; flex: none; }
+}
 .thumb { width: 40px; height: 40px; flex: none; display: grid; place-items: center; font-size: 24px; }
 .thumb img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
 ul.gifts .nm { flex: 1; min-width: 0; }

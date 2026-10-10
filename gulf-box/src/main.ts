@@ -58,6 +58,8 @@ function render(): void {
   const pct = limit > 0 ? Math.min(100, (totalKg / limit) * 100) : 0;
   const leftKg = gifts.reduce((s, g) => s + g.weightKg, 0) - totalKg;
 
+  const packedIds = new Set(ordered.map((g) => g.id));
+
   app.innerHTML = `
   <header>
     <div>
@@ -80,11 +82,11 @@ function render(): void {
       </select>
       </label>
       <label class="fld"><span>Or your own limit</span>
-      <span class="kgwrap"><input id="customKg" type="number" min="0" step="0.5" placeholder="kg" value="${customKg ?? ''}"> kg</span>
+      <span class="kgwrap"><input id="customKg" type="number" min="0" step="0.5" placeholder="e.g. 23" aria-label="Custom baggage limit in kilograms" value="${customKg ?? ''}"> kg</span>
       </label>
     </div>
-    <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
-    <p class="total">${totalKg.toFixed(1)} / ${limit.toFixed(1)} kg packed
+    <div class="bar" role="img" aria-label="${pct.toFixed(0)} percent of the allowance packed"><div class="fill" style="width:${pct}%"></div></div>
+    <p class="total">${totalKg.toFixed(1)} / ${limit.toFixed(1)} kg packed · ${pct.toFixed(0)}%
     ${leftOut.length ? `· ${leftKg.toFixed(1)} kg left out` : `· ${(limit - totalKg).toFixed(1)} kg to spare <span class="stamp ok">All packed</span>`}</p>
     <p class="fine">Typical economy allowances — confirm against your e-ticket.</p>
   </section>
@@ -94,33 +96,10 @@ function render(): void {
     <div class="case-body">
     <h2>Suitcase (${ordered.length})</h2>
     <div class="grid" id="grid">
-      ${ordered.map((g) => `<div class="tile" draggable="true" data-id="${g.id}">${tileArt(g)}<b>${esc(g.name)}</b><span>${g.weightKg.toFixed(1)} kg · ★${g.priority}</span></div>`).join('') || '<p class="empty">Nothing fits — raise the limit or drop an item.</p>'}
+      ${ordered.map((g) => `<div class="tile" draggable="true" tabindex="0" role="button" title="Drag to rearrange, or focus and press ← →" aria-label="${esc(g.name)}, ${g.weightKg.toFixed(1)} kilograms, importance ${g.priority} of 5. Use arrow keys to rearrange." data-id="${g.id}"><span class="grip" aria-hidden="true">⠿</span>${tileArt(g)}<b>${esc(g.name)}</b><span>${g.weightKg.toFixed(1)} kg · ★${g.priority}</span></div>`).join('') || '<p class="empty">Nothing fits — raise the limit or drop an item.</p>'}
     </div>
+    <p class="hint">Drag a tag to rearrange — the list only affects how it looks.</p>
     </div>
-  </section>
-
-  <section class="card">
-    <h2>Gifts (${gifts.length})</h2>
-    <div class="addrow">
-      <button type="button" class="pick ${pendingPhoto ? 'has' : ''}" id="pickBtn">
-        ${pendingPhoto ? `<img src="${pendingPhoto}" alt=""><b>Change</b>` : '<span class="cam">📷</span><b>Photo</b>'}
-      </button>
-      <input id="photo" type="file" accept="image/*" hidden>
-      <input id="gname" placeholder="Gift name" maxlength="40">
-      <input id="gweight" type="number" min="0.1" step="0.1" placeholder="kg">
-      <label>★<input id="gprio" type="range" min="1" max="5" value="3"><span id="gprioVal">3</span></label>
-      <button id="addBtn">Add</button>
-      <button id="demoBtn" class="ghost">Reset demo</button>
-    </div>
-    <ul class="gifts">
-      ${gifts.map((g) => `<li data-id="${g.id}">
-        <span class="thumb">${tileArt(g)}</span>
-        <input class="nm" value="${esc(g.name)}" maxlength="40">
-        <input class="wt" type="number" min="0.1" step="0.1" value="${g.weightKg}">
-        <label>★<input class="pr" type="range" min="1" max="5" value="${g.priority}"><span class="prv">${g.priority}</span></label>
-        <button class="rm" title="Remove">✕</button>
-      </li>`).join('')}
-    </ul>
   </section>
 
   ${leftOut.length ? `<section class="card warn">
@@ -130,6 +109,31 @@ function render(): void {
       ${leftOut.map((g) => `<li><span class="thumb">${tileArt(g)}</span><div><b>${esc(g.name)}</b> — ${g.weightKg.toFixed(1)} kg<span class="sug">${esc(suggest(g))}</span></div></li>`).join('')}
     </ul>
   </section>` : ''}
+
+  <section class="card">
+    <h2 class="rowhead">Gifts (${gifts.length}) <button id="demoBtn" class="ghost">Reset demo</button></h2>
+    <div class="addrow">
+      <button type="button" class="pick ${pendingPhoto ? 'has' : ''}" id="pickBtn">
+        ${pendingPhoto ? `<img src="${pendingPhoto}" alt=""><b>Change</b>` : '<span class="cam">📷</span><b>Photo</b>'}
+      </button>
+      <input id="photo" type="file" accept="image/*" hidden>
+      <input id="gname" placeholder="Gift name" maxlength="40" aria-label="Gift name">
+      <input id="gweight" type="number" min="0.1" step="0.1" placeholder="kg" aria-label="Gift weight in kilograms">
+      <label title="Importance, 1 to 5">★<input id="gprio" type="range" min="1" max="5" value="3" aria-label="New gift importance, 1 to 5"><span id="gprioVal">3</span></label>
+      <button id="addBtn">Add</button>
+    </div>
+    <p class="fine">Importance decides what stays in the bag when it gets tight — ★5 is "can't leave without it".</p>
+    <ul class="gifts">
+      ${gifts.map((g) => `<li data-id="${g.id}" class="${packedIds.has(g.id) ? '' : 'cut'}">
+        <span class="thumb">${tileArt(g)}</span>
+        <input class="nm" value="${esc(g.name)}" maxlength="40" aria-label="Gift name">
+        <input class="wt" type="number" min="0.1" step="0.1" value="${g.weightKg}" aria-label="Weight in kilograms">
+        <label title="Importance, 1 to 5">★<input class="pr" type="range" min="1" max="5" value="${g.priority}" aria-label="Importance of ${esc(g.name)}, 1 to 5"><span class="prv">${g.priority}</span></label>
+        <span class="status">${packedIds.has(g.id) ? 'In bag' : 'Left out'}</span>
+        <button class="rm" title="Remove ${esc(g.name)}" aria-label="Remove ${esc(g.name)}">✕</button>
+      </li>`).join('')}
+    </ul>
+  </section>
 
   <footer>Offline-first · your photos never leave this device.</footer>`;
 
@@ -231,9 +235,25 @@ function wire(ordered: Gift[]): void {
     };
   });
 
-  // Visual-only drag reorder inside the packed grid.
+  // Visual-only reorder inside the packed grid: mouse drag, or ←/→ when focused.
   const grid = document.getElementById('grid')!;
   let dragId = '';
+  const move = (id: string, dir: -1 | 1) => {
+    const ids = ordered.map((g) => g.id);
+    const at = ids.indexOf(id);
+    const to = at + dir;
+    if (at < 0 || to < 0 || to >= ids.length) return;
+    [ids[at], ids[to]] = [ids[to], ids[at]];
+    order = ids;
+    render();
+    // render() replaces the DOM, so the old `grid` node is stale — re-query.
+    // Focus synchronously: an async restore lets the next keypress land on
+    // <body> and be lost.
+    document
+      .getElementById('grid')
+      ?.querySelector<HTMLElement>(`[data-id="${id}"]`)
+      ?.focus();
+  };
   grid.querySelectorAll<HTMLElement>('.tile').forEach((t) => {
     t.ondragstart = () => (dragId = t.dataset.id!);
     t.ondragover = (e) => e.preventDefault();
@@ -244,6 +264,12 @@ function wire(ordered: Gift[]): void {
       ids.splice(at < 0 ? ids.length : at, 0, dragId);
       order = ids;
       render();
+    };
+    t.onkeydown = (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        move(t.dataset.id!, e.key === 'ArrowLeft' ? -1 : 1);
+      }
     };
   });
 
