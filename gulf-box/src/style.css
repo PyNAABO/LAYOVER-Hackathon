@@ -63,8 +63,10 @@ input, select, button {
   border-radius: 6px;
   padding: 7px 10px;
 }
-input[type='number'] { width: 78px; }
+input[type='number'] { width: 64px; }
 input[type='range'] { padding: 0; accent-color: var(--case); border: 0; background: transparent; }
+ul.gifts .pr, .addrow input[type='range'] { flex: 1; min-width: 70px; }
+ul.gifts .rm { flex: none; }
 button { background: var(--case); border: 0; color: #f5efdd; font-weight: 700; cursor: pointer; }
 button.ghost { background: transparent; border: 1.5px solid var(--line); color: var(--ink); }
 button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--brass); outline-offset: 1px; }
@@ -125,8 +127,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 ul.gifts, ul.leftout { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
 ul.gifts li, ul.leftout li {
   display: flex; gap: 8px; align-items: center;
-  background: #fffdf6; border: 1.5px solid var(--line); border-radius: 6px; padding: 6px 8px;
+  background: #fffdf6; border: 1.5px solid var(--line); border-radius: 6px; padding: 8px;
 }
+ul.gifts li { flex-wrap: wrap; }
+ul.gifts li label { flex: 1 1 100%; display: flex; align-items: center; gap: 6px; order: 3; }
+ul.gifts li .rm { order: 2; }
 .thumb { width: 40px; height: 40px; flex: none; display: grid; place-items: center; font-size: 24px; }
 .thumb img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
 ul.gifts .nm { flex: 1; min-width: 0; }
