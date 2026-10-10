@@ -11,6 +11,9 @@
 # Browser MCP residue
 .playwright-mcp/
 
+# Local offline mirror of hackathon site (reference only)
+layover-site/
+
 # Node
 node_modules/
 dist/
