@@ -59,6 +59,7 @@ Knapsack is a 0/1 DP over 100 g units — ~40 lines in `src/knapsack.ts`.
 | [docs/SPEC.md](docs/SPEC.md) | architecture, algorithm, design tokens |
 | [docs/test-checklist.md](docs/test-checklist.md) | 65-case feature matrix |
 | [docs/demo-script.md](docs/demo-script.md) | the 60-second booth run |
+| [docs/pitch-2min.md](docs/pitch-2min.md) | the 2-minute finalist pitch (Round 2) |
 | [docs/TASKS.md](docs/TASKS.md) | build milestones |
 | [AGENTS.md](AGENTS.md) | workflow + tooling notes for coding agents |
 

@@ -97,7 +97,7 @@ function render(): void {
     </div>
     <div class="bar ${overLimit ? 'over' : ''}" role="img" aria-label="${pct.toFixed(0)} percent of the allowance packed"><div class="fill" style="width:${pct}%"></div></div>
     <p class="total ${overLimit ? 'bad' : ''}">${totalKg.toFixed(1)} / ${limit.toFixed(1)} kg packed${overLimit ? ` · ${(totalKg - limit).toFixed(1)} kg over the limit` : ` · ${pct.toFixed(0)}%`}
-    ${!overLimit && (leftOut.length ? `· ${leftKg.toFixed(1)} kg left out` : `· ${(limit - totalKg).toFixed(1)} kg to spare <span class="stamp ok">All packed</span>`)}</p>
+    ${!overLimit && (leftOut.length ? `· ${leftKg.toFixed(1)} kg left out` : gifts.length ? `· ${(limit - totalKg).toFixed(1)} kg to spare <span class="stamp ok">All packed</span>` : '')}</p>
     <p class="fine">Typical economy allowances — confirm against your e-ticket.</p>
   </section>
 
@@ -106,7 +106,7 @@ function render(): void {
     <div class="case-body">
     <h2>Suitcase (${ordered.length})</h2>
     <div class="grid" id="grid">
-      ${ordered.map((g) => `<div class="tile ${g.forced ? 'forced' : ''}" draggable="true" tabindex="0" role="button" title="Drag to rearrange, or focus and press ← →" aria-label="${esc(g.name)}, ${g.weightKg.toFixed(1)} kilograms, importance ${g.priority} of 5${g.forced ? ', pinned in bag' : ''}. Use arrow keys to rearrange." data-id="${g.id}"><span class="grip" aria-hidden="true">⠿</span>${g.forced ? '<span class="pin" aria-hidden="true">📌</span>' : ''}${tileArt(g)}<b>${esc(g.name)}</b><span>${g.weightKg.toFixed(1)} kg · ★${g.priority}</span></div>`).join('') || '<p class="empty">Nothing fits — raise the limit or drop an item.</p>'}
+      ${ordered.map((g) => `<div class="tile ${g.forced ? 'forced' : ''}" draggable="true" tabindex="0" role="button" title="Drag to rearrange, or focus and press ← →" aria-label="${esc(g.name)}, ${g.weightKg.toFixed(1)} kilograms, importance ${g.priority} of 5${g.forced ? ', pinned in bag' : ''}. Use arrow keys to rearrange." data-id="${g.id}"><span class="grip" aria-hidden="true">⠿</span>${g.forced ? '<span class="pin" aria-hidden="true">📌</span>' : ''}${tileArt(g)}<b>${esc(g.name)}</b><span>${g.weightKg.toFixed(1)} kg · ★${g.priority}</span></div>`).join('') || `<p class="empty">${gifts.length ? 'Nothing fits — raise the limit or drop an item.' : 'No gifts yet — add one below to start packing.'}</p>`}
     </div>
     <p class="hint">Drag a tag to rearrange — the list only affects how it looks.</p>
     </div>

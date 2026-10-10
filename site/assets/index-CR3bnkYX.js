@@ -22,7 +22,7 @@
     </div>
     <div class="bar ${i?`over`:``}" role="img" aria-label="${o.toFixed(0)} percent of the allowance packed"><div class="fill" style="width:${o}%"></div></div>
     <p class="total ${i?`bad`:``}">${r.toFixed(1)} / ${e.toFixed(1)} kg packed${i?` · ${(r-e).toFixed(1)} kg over the limit`:` · ${o.toFixed(0)}%`}
-    ${!i&&(n.length?`· ${s.toFixed(1)} kg left out`:`· ${(e-r).toFixed(1)} kg to spare <span class="stamp ok">All packed</span>`)}</p>
+    ${!i&&(n.length?`· ${s.toFixed(1)} kg left out`:b.length?`· ${(e-r).toFixed(1)} kg to spare <span class="stamp ok">All packed</span>`:``)}</p>
     <p class="fine">Typical economy allowances — confirm against your e-ticket.</p>
   </section>
 
@@ -31,7 +31,7 @@
     <div class="case-body">
     <h2>Suitcase (${a.length})</h2>
     <div class="grid" id="grid">
-      ${a.map(e=>`<div class="tile ${e.forced?`forced`:``}" draggable="true" tabindex="0" role="button" title="Drag to rearrange, or focus and press ← →" aria-label="${D(e.name)}, ${e.weightKg.toFixed(1)} kilograms, importance ${e.priority} of 5${e.forced?`, pinned in bag`:``}. Use arrow keys to rearrange." data-id="${e.id}"><span class="grip" aria-hidden="true">⠿</span>${e.forced?`<span class="pin" aria-hidden="true">📌</span>`:``}${O(e)}<b>${D(e.name)}</b><span>${e.weightKg.toFixed(1)} kg · ★${e.priority}</span></div>`).join(``)||`<p class="empty">Nothing fits — raise the limit or drop an item.</p>`}
+      ${a.map(e=>`<div class="tile ${e.forced?`forced`:``}" draggable="true" tabindex="0" role="button" title="Drag to rearrange, or focus and press ← →" aria-label="${D(e.name)}, ${e.weightKg.toFixed(1)} kilograms, importance ${e.priority} of 5${e.forced?`, pinned in bag`:``}. Use arrow keys to rearrange." data-id="${e.id}"><span class="grip" aria-hidden="true">⠿</span>${e.forced?`<span class="pin" aria-hidden="true">📌</span>`:``}${O(e)}<b>${D(e.name)}</b><span>${e.weightKg.toFixed(1)} kg · ★${e.priority}</span></div>`).join(``)||`<p class="empty">${b.length?`Nothing fits — raise the limit or drop an item.`:`No gifts yet — add one below to start packing.`}</p>`}
     </div>
     <p class="hint">Drag a tag to rearrange — the list only affects how it looks.</p>
     </div>
