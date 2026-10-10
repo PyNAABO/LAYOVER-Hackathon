@@ -53,23 +53,17 @@ export function pack(gifts: Gift[], limitKg: number): PackResult {
   const rest = gifts.filter((g) => !g.forced);
   const forcedKg = forced.reduce((s, g) => s + g.weightKg, 0);
 
-  if (forcedKg >= limitKg) {
-    return {
-      packed: forced,
-      leftOut: rest,
-      totalKg: forcedKg,
-      overLimit: forcedKg > limitKg,
-    };
-  }
-
-  const { packed: auto, leftOut } = knapsack(rest, limitKg - forcedKg);
+  // Always run the DP on the remaining room, even when that room is zero.
+  // Short-circuiting here would make unpinning useless while over the limit:
+  // freeing space has to refill the bag automatically, otherwise the user
+  // must unpin several times before the total visibly moves.
+  const { packed: auto, leftOut } = knapsack(
+    rest,
+    Math.max(0, limitKg - forcedKg),
+  );
   const packed = [...forced, ...auto];
-  return {
-    packed,
-    leftOut,
-    totalKg: packed.reduce((s, g) => s + g.weightKg, 0),
-    overLimit: false,
-  };
+  const totalKg = packed.reduce((s, g) => s + g.weightKg, 0);
+  return { packed, leftOut, totalKg, overLimit: totalKg > limitKg };
 }
 
 /**

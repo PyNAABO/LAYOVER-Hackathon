@@ -115,7 +115,7 @@ function render(): void {
   ${leftOut.length ? `<section class="card warn">
     <div class="stamp">Not packed</div>
     <h2>Left out (${leftOut.length})</h2>
-    <p class="fine">${overLimit ? 'Your pinned gifts are over the limit — unpin something to free space.' : 'The packer left these out. If one matters more than what is in the bag, put it in anyway.'}</p>
+    <p class="fine">${overLimit ? `Pinned gifts are over the limit by ${(totalKg - limit).toFixed(1)} kg — unpin the lightest pinned gift below to free space.` : 'The packer left these out. If one matters more than what is in the bag, put it in anyway.'}</p>
     <ul class="leftout">
       ${leftOut.map((g) => {
         const evicts = forcedIn.get(g.id);
