@@ -25,6 +25,8 @@ nobody optimises, nobody tells you what to cut.
 3. **Watch the bag** — packed items appear as luggage tags you can rearrange;
    the weight bar tracks the total live.
 4. **See what got cut** — with one practical suggestion each.
+5. **Override the packer** — "Put in bag" pins anything the algorithm left out,
+   showing what it would evict. Unpin hands it back.
 
 Installable, works offline, photos never leave your device.
 
@@ -62,5 +64,5 @@ Knapsack is a 0/1 DP over 100 g units — ~40 lines in `src/knapsack.ts`.
 
 ## Status
 
-Feature-complete and tested (65 cases green). Remaining: phone install check,
+Feature-complete and tested (~70 cases green across 4 sweeps, layout audited at 7 widths). Remaining: phone install check,
 final rehearsal, and the judging rounds. Licence: MIT.
