@@ -206,6 +206,27 @@ ul.gifts li .rm { order: 3; flex: none; }
 ul.gifts .nm { flex: 1; min-width: 0; }
 .prv { font: 700 13px ui-monospace, monospace; color: var(--dim); min-width: 12px; }
 .sug { display: block; color: #7a5c14; font-size: 13px; }
+.trade { display: block; color: var(--stamp); font-size: 12.5px; margin-top: 2px; }
+
+/* Over-limit: pinned gifts exceed the allowance. */
+.bar.over .fill { background: var(--stamp); }
+.total.bad { color: var(--stamp); }
+
+/* "Put in bag" — the user overriding the packer. */
+.put {
+  flex: none; background: var(--case); color: #f5efdd;
+  border: 0; border-radius: 6px; padding: 8px 12px;
+  font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap;
+}
+.put:disabled { background: transparent; border: 1px solid var(--line); color: var(--dim); cursor: not-allowed; }
+.unpin {
+  flex: none; background: transparent; border: 1.5px solid var(--brass);
+  color: #7a5c14; border-radius: 6px; padding: 5px 9px;
+  font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
+}
+li.forced-row { background: #eef4ec; border-color: var(--ok); }
+.tile.forced { border-color: var(--brass); box-shadow: 0 0 0 1px var(--brass); }
+.pin { position: absolute; top: 2px; right: 3px; font-size: 12px; }
 
 /* Rubber stamp verdict */
 .stamp {

@@ -5,6 +5,7 @@ export interface Gift {
   priority: number; // 1–5
   photo?: string; // object URL
   emoji?: string; // fallback tile art
+  forced?: boolean; // user pinned it into the bag
 }
 
 export interface Airline {

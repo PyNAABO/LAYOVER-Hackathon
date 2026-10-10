@@ -2,7 +2,7 @@ import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { AIRLINES, demoGifts, suggest, makeGift } from './data';
 import type { Gift } from './data';
-import { pack } from './knapsack';
+import { pack, planForceIn } from './knapsack';
 
 registerSW({ immediate: true });
 
@@ -51,12 +51,22 @@ function tileArt(g: Gift): string {
 
 function render(): void {
   const limit = limitKg();
-  const { packed, leftOut, totalKg } = pack(gifts, limit);
+  const { packed, leftOut, totalKg, overLimit } = pack(gifts, limit);
   const ordered = [...packed].sort(
     (a, b) => orderIndex(a.id) - orderIndex(b.id),
   );
   const pct = limit > 0 ? Math.min(100, (totalKg / limit) * 100) : 0;
   const leftKg = gifts.reduce((s, g) => s + g.weightKg, 0) - totalKg;
+  // Which gift would have to leave if this left-out one is forced in?
+  const forcedIn = new Map<string, string[]>();
+  if (!overLimit) {
+    for (const g of leftOut) {
+      const { evicts } = planForceIn(packed, g, limit);
+      if (evicts.length) {
+        forcedIn.set(g.id, evicts.map((e) => e.name));
+      }
+    }
+  }
 
   const packedIds = new Set(ordered.map((g) => g.id));
 
@@ -85,9 +95,9 @@ function render(): void {
       <span class="kgwrap"><input id="customKg" type="number" min="0" step="0.5" placeholder="e.g. 23" aria-label="Custom baggage limit in kilograms" value="${customKg ?? ''}"> kg</span>
       </label>
     </div>
-    <div class="bar" role="img" aria-label="${pct.toFixed(0)} percent of the allowance packed"><div class="fill" style="width:${pct}%"></div></div>
-    <p class="total">${totalKg.toFixed(1)} / ${limit.toFixed(1)} kg packed · ${pct.toFixed(0)}%
-    ${leftOut.length ? `· ${leftKg.toFixed(1)} kg left out` : `· ${(limit - totalKg).toFixed(1)} kg to spare <span class="stamp ok">All packed</span>`}</p>
+    <div class="bar ${overLimit ? 'over' : ''}" role="img" aria-label="${pct.toFixed(0)} percent of the allowance packed"><div class="fill" style="width:${pct}%"></div></div>
+    <p class="total ${overLimit ? 'bad' : ''}">${totalKg.toFixed(1)} / ${limit.toFixed(1)} kg packed${overLimit ? ` · ${(totalKg - limit).toFixed(1)} kg over the limit` : ` · ${pct.toFixed(0)}%`}
+    ${!overLimit && (leftOut.length ? `· ${leftKg.toFixed(1)} kg left out` : `· ${(limit - totalKg).toFixed(1)} kg to spare <span class="stamp ok">All packed</span>`)}</p>
     <p class="fine">Typical economy allowances — confirm against your e-ticket.</p>
   </section>
 
@@ -96,7 +106,7 @@ function render(): void {
     <div class="case-body">
     <h2>Suitcase (${ordered.length})</h2>
     <div class="grid" id="grid">
-      ${ordered.map((g) => `<div class="tile" draggable="true" tabindex="0" role="button" title="Drag to rearrange, or focus and press ← →" aria-label="${esc(g.name)}, ${g.weightKg.toFixed(1)} kilograms, importance ${g.priority} of 5. Use arrow keys to rearrange." data-id="${g.id}"><span class="grip" aria-hidden="true">⠿</span>${tileArt(g)}<b>${esc(g.name)}</b><span>${g.weightKg.toFixed(1)} kg · ★${g.priority}</span></div>`).join('') || '<p class="empty">Nothing fits — raise the limit or drop an item.</p>'}
+      ${ordered.map((g) => `<div class="tile ${g.forced ? 'forced' : ''}" draggable="true" tabindex="0" role="button" title="Drag to rearrange, or focus and press ← →" aria-label="${esc(g.name)}, ${g.weightKg.toFixed(1)} kilograms, importance ${g.priority} of 5${g.forced ? ', pinned in bag' : ''}. Use arrow keys to rearrange." data-id="${g.id}"><span class="grip" aria-hidden="true">⠿</span>${g.forced ? '<span class="pin" aria-hidden="true">📌</span>' : ''}${tileArt(g)}<b>${esc(g.name)}</b><span>${g.weightKg.toFixed(1)} kg · ★${g.priority}</span></div>`).join('') || '<p class="empty">Nothing fits — raise the limit or drop an item.</p>'}
     </div>
     <p class="hint">Drag a tag to rearrange — the list only affects how it looks.</p>
     </div>
@@ -105,8 +115,20 @@ function render(): void {
   ${leftOut.length ? `<section class="card warn">
     <div class="stamp">Not packed</div>
     <h2>Left out (${leftOut.length})</h2>
+    <p class="fine">${overLimit ? 'Your pinned gifts are over the limit — unpin something to free space.' : 'The packer left these out. If one matters more than what is in the bag, put it in anyway.'}</p>
     <ul class="leftout">
-      ${leftOut.map((g) => `<li><span class="thumb">${tileArt(g)}</span><div><b>${esc(g.name)}</b> — ${g.weightKg.toFixed(1)} kg<span class="sug">${esc(suggest(g))}</span></div></li>`).join('')}
+      ${leftOut.map((g) => {
+        const evicts = forcedIn.get(g.id);
+        return `<li>
+        <span class="thumb">${tileArt(g)}</span>
+        <div class="lobody">
+          <b>${esc(g.name)}</b> — ${g.weightKg.toFixed(1)} kg
+          <span class="sug">${esc(suggest(g))}</span>
+          ${evicts ? `<span class="trade">Takes out: ${esc(evicts.join(', '))}</span>` : ''}
+        </div>
+        <button class="put" data-id="${g.id}" ${overLimit ? 'disabled' : ''}>Put in bag</button>
+      </li>`;
+      }).join('')}
     </ul>
   </section>` : ''}
 
@@ -124,12 +146,13 @@ function render(): void {
     </div>
     <p class="fine">Importance decides what stays in the bag when it gets tight — ★5 is "can't leave without it".</p>
     <ul class="gifts">
-      ${gifts.map((g) => `<li data-id="${g.id}" class="${packedIds.has(g.id) ? '' : 'cut'}">
+      ${gifts.map((g) => `<li data-id="${g.id}" class="${packedIds.has(g.id) ? '' : 'cut'}${g.forced ? ' forced-row' : ''}">
         <span class="thumb">${tileArt(g)}</span>
         <input class="nm" value="${esc(g.name)}" maxlength="40" aria-label="Gift name">
         <input class="wt" type="number" min="0.1" step="0.1" value="${g.weightKg}" aria-label="Weight in kilograms">
         <label title="Importance, 1 to 5">★<input class="pr" type="range" min="1" max="5" value="${g.priority}" aria-label="Importance of ${esc(g.name)}, 1 to 5"><span class="prv">${g.priority}</span></label>
-        <span class="status">${packedIds.has(g.id) ? 'In bag' : 'Left out'}</span>
+        <span class="status">${packedIds.has(g.id) ? (g.forced ? 'Pinned' : 'In bag') : 'Left out'}</span>
+        ${g.forced ? `<button class="unpin" data-id="${g.id}" title="Unpin ${esc(g.name)} — let the packer decide again">Unpin</button>` : ''}
         <button class="rm" title="Remove ${esc(g.name)}" aria-label="Remove ${esc(g.name)}">✕</button>
       </li>`).join('')}
     </ul>
@@ -206,6 +229,27 @@ function wire(ordered: Gift[]): void {
     pendingPhoto = '';
     render();
   };
+
+  // "Put in bag": pin a left-out gift. The packer already evicted whatever
+  // had to go, so this is one tap — the app decides, the user overrides.
+  document.querySelectorAll<HTMLButtonElement>('.put').forEach((b) => {
+    b.onclick = () => {
+      const g = gifts.find((x) => x.id === b.dataset.id);
+      if (g) {
+        g.forced = true;
+        render();
+      }
+    };
+  });
+  document.querySelectorAll<HTMLButtonElement>('.unpin').forEach((b) => {
+    b.onclick = () => {
+      const g = gifts.find((x) => x.id === b.dataset.id);
+      if (g) {
+        g.forced = false;
+        render();
+      }
+    };
+  });
 
   document.querySelectorAll<HTMLLIElement>('ul.gifts li').forEach((li) => {
     const id = li.dataset.id!;
