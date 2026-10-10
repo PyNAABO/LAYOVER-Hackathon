@@ -6,10 +6,33 @@ import { pack } from './knapsack';
 
 registerSW({ immediate: true });
 
+// Downscale to a thumbnail: booth photos come from phone cameras (3–5 MB),
+// which would choke the page. 320px on the long edge keeps tiles crisp.
+async function thumbnail(file: File): Promise<string> {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise<HTMLImageElement>((res, rej) => {
+      const i = new Image();
+      i.onload = () => res(i);
+      i.onerror = () => rej(new Error('image decode failed'));
+      i.src = url;
+    });
+    const scale = Math.min(1, 320 / Math.max(img.width, img.height));
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(img.width * scale));
+    c.height = Math.max(1, Math.round(img.height * scale));
+    c.getContext('2d')!.drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.82);
+  } catch {
+    return url; // unreadable file: fall back to the original object URL
+  }
+}
+
 let gifts: Gift[] = demoGifts();
 let airlineIdx = 5; // Air India Express 20 kg — demo default with tension
 let customKg: number | null = null;
 let order: string[] = []; // visual tile order override
+let pendingPhoto = ''; // staged photo for the next add
 
 const app = document.getElementById('app')!;
 
@@ -79,7 +102,10 @@ function render(): void {
   <section class="card">
     <h2>Gifts (${gifts.length})</h2>
     <div class="addrow">
-      <label class="file">📷 Photo<input id="photo" type="file" accept="image/*" hidden></label>
+      <button type="button" class="pick ${pendingPhoto ? 'has' : ''}" id="pickBtn">
+        ${pendingPhoto ? `<img src="${pendingPhoto}" alt=""><b>Change</b>` : '<span class="cam">📷</span><b>Photo</b>'}
+      </button>
+      <input id="photo" type="file" accept="image/*" hidden>
       <input id="gname" placeholder="Gift name" maxlength="40">
       <input id="gweight" type="number" min="0.1" step="0.1" placeholder="kg">
       <label>★<input id="gprio" type="range" min="1" max="5" value="3"><span id="gprioVal">3</span></label>
@@ -133,15 +159,16 @@ function wire(ordered: Gift[]): void {
   gprio.oninput = () =>
     ((document.getElementById('gprioVal') as HTMLElement).textContent = gprio.value);
 
-  let pendingPhoto = '';
   const photo = document.getElementById('photo') as HTMLInputElement;
-  photo.onchange = () => {
+  photo.onchange = async () => {
     const f = photo.files?.[0];
     if (f) {
       if (pendingPhoto.startsWith('blob:')) URL.revokeObjectURL(pendingPhoto);
-      pendingPhoto = URL.createObjectURL(f);
+      pendingPhoto = await thumbnail(f);
+      render();
     }
   };
+  (document.getElementById('pickBtn') as HTMLButtonElement).onclick = () => photo.click();
 
   (document.getElementById('addBtn') as HTMLButtonElement).onclick = () => {
     const name = (document.getElementById('gname') as HTMLInputElement).value.trim();
@@ -166,6 +193,7 @@ function wire(ordered: Gift[]): void {
     order = [];
     customKg = null;
     airlineIdx = 5;
+    pendingPhoto = '';
     render();
   };
 
@@ -214,6 +242,9 @@ function wire(ordered: Gift[]): void {
   installBtn.hidden = !w.__deferredInstall;
   installBtn.onclick = () => w.__deferredInstall?.prompt();
 }
+
+// Test hook: lets automated feature tests inspect state.
+(window as unknown as { __gb: unknown }).__gb = { gifts: () => gifts, limit: limitKg };
 
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
