@@ -198,17 +198,22 @@ ul.gifts li, ul.leftout li {
    onto its own line. Orders are distinct: label and status are both
    full-width rows, so ✕ must have a lower order than label to stay on line 1. */
 ul.gifts li { flex-wrap: wrap; }
-ul.gifts .nm { flex: 1 1 60px; min-width: 0; }
+/* The name is the most important field on the row, so it absorbs the slack:
+   flex-grow 10 vs the slider's 1, otherwise they split it and long names clip. */
+ul.gifts .nm { flex: 10 1 130px; min-width: 0; }
 ul.gifts .wt { order: 1; flex: none; width: 62px; }
 ul.gifts li .rm { order: 2; flex: none; }
 ul.gifts li label { order: 3; flex: 1 1 100%; display: flex; align-items: center; gap: 6px; }
 ul.gifts li .status { order: 4; flex: 1 1 100%; }
-ul.gifts li .unpin, ul.gifts li .destroy { order: 6; flex: none; }
+ul.gifts li .unpin, ul.gifts li .destroy, ul.gifts li .rm { order: 6; flex: none; }
 
 /* Wide screens: one line. */
-@media (min-width: 560px) {
+@media (min-width: 660px) {
   ul.gifts li { flex-wrap: nowrap; }
-  ul.gifts li label { flex: 1 1 110px; order: 0; }
+  /* Slider must not grow: every px it takes is one the gift name loses. */
+  ul.gifts li label { flex: 0 1 122px; min-width: 64px; order: 0; }
+  ul.gifts li .pr { min-width: 58px; }
+  ul.gifts li .prv { flex: none; }
   ul.gifts li .status { flex: none; order: 4; }
   ul.gifts li .rm { order: 5; }
   ul.gifts .wt { width: 58px; }

@@ -2,7 +2,7 @@
 
 **Fit every gift into one baggage allowance.**
 
-![The Gulf Box app: allowance bar at 17 of 20 kg, nine gifts packed as luggage tags in a suitcase, the steel dinner set stamped "Not packed" with a Put in bag button](assets/screenshot.png)
+![Gulf Box: the weight bar reads 17.0 of 20 kg packed. Nine gifts sit as luggage tags inside the suitcase; the steel dinner set is stamped "Not packed" with a Put in bag button showing what it would evict. Below, the gift list with its importance sliders and in-bag status.](assets/screenshot.png)
 
 Built in one night at [LAYOVER 2026](https://tinkerhub.github.io/layover/) — TinkerSpace
 Calicut, 10–11 Oct 2026. Theme: travel. Solo, ~11 hours.

@@ -75,8 +75,9 @@
         <label title="Importance, 1 to 5">★<input class="pr" type="range" min="1" max="5" value="${e.priority}" aria-label="Importance of ${D(e.name)}, 1 to 5"><span class="prv">${e.priority}</span></label>
         <span class="status">${e.excluded?`Taken out`:l.has(e.id)?e.forced?`Pinned`:`In bag`:`Left out`}</span>
         ${e.forced?`<button class="unpin" data-id="${e.id}" title="Unpin ${D(e.name)} — let the packer decide again">Unpin</button>`:``}
-        ${e.excluded?`<button class="unpin" data-id="${e.id}" title="Put ${D(e.name)} back into consideration">Put back</button>`:`<button class="rm" data-id="${e.id}" title="Keep ${D(e.name)} out of the bag" aria-label="Take ${D(e.name)} out of the bag">✕</button>`}
+        ${e.excluded?`<button class="unpin" data-id="${e.id}" title="Put ${D(e.name)} back into consideration">Put back</button>`:``}
         <button class="destroy" data-id="${e.id}" title="Delete ${D(e.name)} for good" aria-label="Delete ${D(e.name)}">Remove</button>
+        ${e.excluded?``:`<button class="rm" data-id="${e.id}" title="Keep ${D(e.name)} out of the bag" aria-label="Take ${D(e.name)} out of the bag">✕</button>`}
       </li>`).join(``)}
     </ul>
   </section>

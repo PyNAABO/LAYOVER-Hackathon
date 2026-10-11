@@ -156,8 +156,9 @@ function render(): void {
         <label title="Importance, 1 to 5">★<input class="pr" type="range" min="1" max="5" value="${g.priority}" aria-label="Importance of ${esc(g.name)}, 1 to 5"><span class="prv">${g.priority}</span></label>
         <span class="status">${g.excluded ? 'Taken out' : packedIds.has(g.id) ? (g.forced ? 'Pinned' : 'In bag') : 'Left out'}</span>
         ${g.forced ? `<button class="unpin" data-id="${g.id}" title="Unpin ${esc(g.name)} — let the packer decide again">Unpin</button>` : ''}
-        ${g.excluded ? `<button class="unpin" data-id="${g.id}" title="Put ${esc(g.name)} back into consideration">Put back</button>` : `<button class="rm" data-id="${g.id}" title="Keep ${esc(g.name)} out of the bag" aria-label="Take ${esc(g.name)} out of the bag">✕</button>`}
+        ${g.excluded ? `<button class="unpin" data-id="${g.id}" title="Put ${esc(g.name)} back into consideration">Put back</button>` : ''}
         <button class="destroy" data-id="${g.id}" title="Delete ${esc(g.name)} for good" aria-label="Delete ${esc(g.name)}">Remove</button>
+        ${g.excluded ? '' : `<button class="rm" data-id="${g.id}" title="Keep ${esc(g.name)} out of the bag" aria-label="Take ${esc(g.name)} out of the bag">✕</button>`}
       </li>`).join('')}
     </ul>
   </section>
