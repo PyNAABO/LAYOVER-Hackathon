@@ -14,14 +14,17 @@
 # Local offline mirror of hackathon site (reference only)
 layover-site/
 
-# Agent tooling installed by `uipro init --ai opencode` — large vendor
-# data packs, re-installable, not part of the product. Kept on disk.
-.opencode/skills/design/
-.opencode/skills/design-system/
-.opencode/skills/ui-styling/
-.opencode/skills/ui-ux-pro-max/data/phosphor-icons-upstream.json
-.opencode/skills/ui-ux-pro-max/data/google-font-licenses.json
-.opencode/skills/ui-ux-pro-max/scripts/tests/
+# --- Not part of the project (kept local, excluded from the public repo) ---
+
+# Sponsor/competitor research: candid analysis of the event's sponsor.
+# Private by design — do not publish.
+research/
+
+# Agent tooling installed locally (skills, commands, plugin caches).
+.opencode/
+
+# Browser automation residue
+.playwright-mcp/
 
 # Node
 node_modules/
