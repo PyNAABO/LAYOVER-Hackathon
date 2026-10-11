@@ -2,6 +2,9 @@
 
 **Fit every gift into one baggage allowance.**
 
+**Live app: <https://pynaabo.github.io/LAYOVER-Hackathon/>** — installable, works
+offline, no backend.
+
 ![Gulf Box: the weight bar reads 17.0 of 20 kg packed. Nine gifts sit as luggage tags inside the suitcase; the steel dinner set is stamped "Not packed" with a Put in bag button showing what it would evict. Below, the gift list with its importance sliders and in-bag status.](assets/screenshot.png)
 
 Built in one night at [LAYOVER 2026](https://tinkerhub.github.io/layover/) — TinkerSpace
