@@ -11,13 +11,13 @@
 # Browser automation residue
 .playwright-mcp/
 
-# Local offline mirror of hackathon site (reference only)
+# Private working notes. Not published.
 layover-site/
+layover-brief.md
 
 # --- Excluded from the public repo (kept local) ---
 
-# Sponsor/competitor research: candid analysis of the event's sponsor.
-# Private by design — do not publish.
+# Private working notes. Not published.
 research/
 
 # Agent tooling installed locally (skills, commands, plugin caches).
