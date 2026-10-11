@@ -8,13 +8,13 @@
 .env
 .env.local
 
-# Browser MCP residue
+# Browser automation residue
 .playwright-mcp/
 
 # Local offline mirror of hackathon site (reference only)
 layover-site/
 
-# --- Not part of the project (kept local, excluded from the public repo) ---
+# --- Excluded from the public repo (kept local) ---
 
 # Sponsor/competitor research: candid analysis of the event's sponsor.
 # Private by design — do not publish.
@@ -22,9 +22,6 @@ research/
 
 # Agent tooling installed locally (skills, commands, plugin caches).
 .opencode/
-
-# Browser automation residue
-.playwright-mcp/
 
 # Node
 node_modules/
@@ -44,3 +41,9 @@ venv/
 /vendor/
 target/
 bin/
+
+# Local working docs + agent config — not published with the project.
+# Kept on disk; see README for the summary that replaces them publicly.
+opencode.json
+AGENTS.md
+docs/

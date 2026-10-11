@@ -2,68 +2,84 @@
 
 **Fit every gift into one baggage allowance.**
 
-Built overnight at [LAYOVER 2026](https://tinkerhub.github.io/layover/) ·
-TinkerSpace Calicut · 10–11 Oct 2026 · theme: travel · solo, 12 hours.
+![The Gulf Box app: allowance bar at 17 of 20 kg, nine gifts packed as luggage tags in a suitcase, the steel dinner set stamped "Not packed" with a Put in bag button](assets/screenshot.png)
 
-<img src="gulf-box/public/icon.svg" width="64" alt="">
+Built in one night at [LAYOVER 2026](https://tinkerhub.github.io/layover/) — TinkerSpace
+Calicut, 10–11 Oct 2026. Theme: travel. Solo, ~11 hours.
+
+---
 
 ## The problem
 
-Flying Dubai → Kerala means carrying gifts home: dates for Amma, perfume for
-the cousin, a rice cooker for the uncle. The list always exceeds the 30 kg
-allowance. At the check-in counter you have seconds to decide whose gift gets
-dropped — and you pay per kg if you decide badly.
+Flying home from Dubai means carrying gifts. Dates for Amma, perfume for the
+cousin, a rice cooker for the uncle. The list is always 23 kilos of gifts
+against a 20 kilo allowance — and you find out at the check-in counter, in
+front of everyone, choosing who gets nothing.
 
-Existing packing apps are checklists with pictures. Nobody shows you the bag,
-nobody optimises, nobody tells you what to cut.
+Existing packing apps are checklists with pictures. They never show you the
+bag, never optimise the choice, and never let you disagree with them.
 
 ## What it does
 
-1. **Photograph** each gift, enter its weight, set how important it is (★1–5).
-2. **Pack** — a knapsack algorithm picks the highest-value set that fits your
-   airline's allowance (8 presets or your own number).
-3. **Watch the bag** — packed items appear as luggage tags you can rearrange;
-   the weight bar tracks the total live.
-4. **See what got cut** — with one practical suggestion each.
-5. **Override the packer** — "Put in bag" pins anything the algorithm left out,
-   showing what it would evict. Unpin hands it back.
+- **Photograph** every gift, set its weight and how much it matters (★1–5).
+- **Pack** — a knapsack solver picks the highest-value set that fits the
+  airline's allowance. Eight airlines built in, or type your ticket's number.
+- **See the bag fill** as luggage tags you can drag into any order, with a
+  live weight bar.
+- **Override it** — *"Put in bag"* pins anything the packer cut and tells you
+  what it would evict. The app does the arithmetic; you make the call.
+- **Works offline.** Installable PWA, no network calls, no accounts, photos
+  never leave the device.
 
-Installable, works offline, photos never leave your device.
+## Run it
 
-## Quick start
-
-```sh
+```bash
 cd gulf-box
 npm install
-npm run dev          # http://localhost:5173
+npm run dev            # http://localhost:5173
 ```
 
-To demo the built app (what judges see):
+To see the built app — what judges see:
 
-```sh
+```bash
 npm run build
-npm run preview -- --port 4173
+npm run preview        # http://localhost:4173
 ```
+
+Or open `site/index.html` — the committed production build, no install needed.
+
+## How it works
+
+`gulf-box/src/knapsack.ts`, about forty lines:
+
+- Weights convert to integer **100 g units**.
+- Value is `importance × 100_000 − weight`, so importance dominates and ties
+  break toward the **lighter** set.
+- A 0/1 DP table fills the bag, then backtracks to split packed from left out.
+- Gifts you pin are pulled out first; the solver refills whatever room is left.
+- Over-limit pins still show honestly in red rather than silently failing.
+
+60 gifts re-pack in ~3 ms. No dependencies at runtime, no framework, no CDN —
+which is why it works in airplane mode.
 
 ## Stack
 
-Vite + TypeScript, vanilla (no framework), one dependency family
-(`vite-plugin-pwa`). No runtime network calls, no webfonts, no accounts.
-Knapsack is a 0/1 DP over 100 g units — ~40 lines in `src/knapsack.ts`.
+Vite · TypeScript · vanilla DOM · `vite-plugin-pwa`. One dev dependency tree,
+zero runtime dependencies.
 
-## Docs
-
-| File | What it is |
-|------|------------|
-| [docs/PRD.md](docs/PRD.md) | problem, users, features, rubric strategy |
-| [docs/SPEC.md](docs/SPEC.md) | architecture, algorithm, design tokens |
-| [docs/test-checklist.md](docs/test-checklist.md) | 65-case feature matrix |
-| [docs/demo-script.md](docs/demo-script.md) | the 60-second booth run |
-| [docs/pitch-2min.md](docs/pitch-2min.md) | the 2-minute finalist pitch (Round 2) |
-| [docs/TASKS.md](docs/TASKS.md) | build milestones |
-| [AGENTS.md](AGENTS.md) | workflow + tooling notes for coding agents |
+```
+gulf-box/src/     768 lines — data.ts · knapsack.ts · main.ts · style.css
+site/             the built app, opens straight from the browser
+assets/           screenshot
+```
 
 ## Status
 
-Feature-complete and tested (~70 cases green across 4 sweeps, layout audited at 7 widths). Remaining: phone install check,
-final rehearsal, and the judging rounds. Licence: MIT.
+Feature-complete and tested: ~70 cases across four sweeps, layout audited at
+seven widths from 1440 px down to 320 px.
+
+The full PRD, technical spec, feature-by-feature test checklist, and the
+60-second and 2-minute judging scripts are kept locally in `docs/` and are not
+part of this published repository.
+
+MIT
