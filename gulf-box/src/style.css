@@ -215,7 +215,6 @@ ul.gifts li .unpin, ul.gifts li .destroy, ul.gifts li .rm { order: 6; flex: none
   ul.gifts li .pr { min-width: 58px; }
   ul.gifts li .prv { flex: none; }
   ul.gifts li .status { flex: none; order: 4; }
-  ul.gifts li .rm { order: 5; }
   ul.gifts .wt { width: 58px; }
 }
 .thumb { width: 40px; height: 40px; flex: none; display: grid; place-items: center; font-size: 24px; }
