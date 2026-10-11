@@ -116,7 +116,13 @@ function render(): void {
   ${leftOut.length ? `<section class="card warn">
     <div class="stamp">Not packed</div>
     <h2>Left out (${leftOut.length})</h2>
-    <p class="fine">${overLimit ? `Pinned gifts are over the limit by ${(totalKg - limit).toFixed(1)} kg — unpin the lightest pinned gift below to free space.` : 'The packer left these out. If one matters more than what is in the bag, put it in anyway.'}</p>
+    <p class="fine">${overLimit
+      ? `Pinned gifts are over the limit by ${(totalKg - limit).toFixed(1)} kg — unpin the lightest pinned gift below to free space.`
+      : leftOut.every((g) => g.excluded)
+        ? "You took all of these out of the bag. Put one back in if it matters more than what's already in there."
+        : leftOut.some((g) => g.excluded)
+          ? "The packer left some of these out; the rest you took out yourself. Put one back in if it matters more than what's already in the bag."
+          : 'The packer left these out. If one matters more than what is in the bag, put it in anyway.'}</p>
     <ul class="leftout">
       ${leftOut.map((g) => {
         const evicts = forcedIn.get(g.id);
@@ -127,7 +133,9 @@ function render(): void {
         <div class="lobody">
           <b>${esc(g.name)}</b> — ${g.weightKg.toFixed(1)} kg
           <span class="sug">${esc(suggest(g))}</span>
-          ${evicts ? `<span class="trade">Takes out: ${esc(evicts.join(', '))}</span>` : ''}
+          ${g.excluded
+            ? '<span class="mine">You took this out</span>'
+            : evicts ? `<span class="trade">Takes out: ${esc(evicts.join(', '))}</span>` : ''}
         </div>
         <button class="${cls}" data-id="${g.id}" ${overLimit && !g.excluded ? 'disabled' : ''}>${label}</button>
       </li>`;
@@ -136,7 +144,7 @@ function render(): void {
   </section>` : ''}
 
   <section class="card">
-    <h2 class="rowhead">Gifts (${gifts.length}) <button id="demoBtn" class="ghost">Reset demo</button></h2>
+    <h2 class="rowhead">Gifts (${gifts.filter((g) => !g.excluded).length}) <button id="demoBtn" class="ghost">Reset demo</button></h2>
     <div class="addrow">
       <button type="button" class="pick ${pendingPhoto ? 'has' : ''}" id="pickBtn">
         ${pendingPhoto ? `<img src="${pendingPhoto}" alt=""><b>Change</b>` : '<span class="cam">📷</span><b>Photo</b>'}
@@ -149,7 +157,7 @@ function render(): void {
     </div>
     <p class="fine">Importance decides what stays in the bag when it gets tight — ★5 is "can't leave without it".</p>
     <ul class="gifts">
-      ${gifts.map((g) => `<li data-id="${g.id}" class="${packedIds.has(g.id) ? '' : 'cut'}${g.forced ? ' forced-row' : ''}${g.excluded ? ' excluded-row' : ''}">
+      ${gifts.filter((g) => !g.excluded).map((g) => `<li data-id="${g.id}" class="${packedIds.has(g.id) ? '' : 'cut'}${g.forced ? ' forced-row' : ''}${g.excluded ? ' excluded-row' : ''}">
         <span class="thumb">${tileArt(g)}</span>
         <input class="nm" value="${esc(g.name)}" maxlength="40" aria-label="Gift name">
         <input class="wt" type="number" min="0.1" step="0.1" value="${g.weightKg}" aria-label="Weight in kilograms">

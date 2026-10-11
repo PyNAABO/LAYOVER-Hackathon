@@ -40,14 +40,14 @@
   ${n.length?`<section class="card warn">
     <div class="stamp">Not packed</div>
     <h2>Left out (${n.length})</h2>
-    <p class="fine">${i?`Pinned gifts are over the limit by ${(r-e).toFixed(1)} kg — unpin the lightest pinned gift below to free space.`:`The packer left these out. If one matters more than what is in the bag, put it in anyway.`}</p>
+    <p class="fine">${i?`Pinned gifts are over the limit by ${(r-e).toFixed(1)} kg — unpin the lightest pinned gift below to free space.`:n.every(e=>e.excluded)?`You took all of these out of the bag. Put one back in if it matters more than what's already in there.`:n.some(e=>e.excluded)?`The packer left some of these out; the rest you took out yourself. Put one back in if it matters more than what's already in the bag.`:`The packer left these out. If one matters more than what is in the bag, put it in anyway.`}</p>
     <ul class="leftout">
       ${n.map(e=>{let t=c.get(e.id),n=e.excluded?`Put in back`:`Put in bag`,r=e.excluded?`put back`:`put`;return`<li class="${e.excluded?`excluded-row`:``}">
         <span class="thumb">${O(e)}</span>
         <div class="lobody">
           <b>${D(e.name)}</b> — ${e.weightKg.toFixed(1)} kg
           <span class="sug">${D(h(e))}</span>
-          ${t?`<span class="trade">Takes out: ${D(t.join(`, `))}</span>`:``}
+          ${e.excluded?`<span class="mine">You took this out</span>`:t?`<span class="trade">Takes out: ${D(t.join(`, `))}</span>`:``}
         </div>
         <button class="${r}" data-id="${e.id}" ${i&&!e.excluded?`disabled`:``}>${n}</button>
       </li>`}).join(``)}
@@ -55,7 +55,7 @@
   </section>`:``}
 
   <section class="card">
-    <h2 class="rowhead">Gifts (${b.length}) <button id="demoBtn" class="ghost">Reset demo</button></h2>
+    <h2 class="rowhead">Gifts (${b.filter(e=>!e.excluded).length}) <button id="demoBtn" class="ghost">Reset demo</button></h2>
     <div class="addrow">
       <button type="button" class="pick ${w?`has`:``}" id="pickBtn">
         ${w?`<img src="${w}" alt=""><b>Change</b>`:`<span class="cam">📷</span><b>Photo</b>`}
@@ -68,7 +68,7 @@
     </div>
     <p class="fine">Importance decides what stays in the bag when it gets tight — ★5 is "can't leave without it".</p>
     <ul class="gifts">
-      ${b.map(e=>`<li data-id="${e.id}" class="${l.has(e.id)?``:`cut`}${e.forced?` forced-row`:``}${e.excluded?` excluded-row`:``}">
+      ${b.filter(e=>!e.excluded).map(e=>`<li data-id="${e.id}" class="${l.has(e.id)?``:`cut`}${e.forced?` forced-row`:``}${e.excluded?` excluded-row`:``}">
         <span class="thumb">${O(e)}</span>
         <input class="nm" value="${D(e.name)}" maxlength="40" aria-label="Gift name">
         <input class="wt" type="number" min="0.1" step="0.1" value="${e.weightKg}" aria-label="Weight in kilograms">

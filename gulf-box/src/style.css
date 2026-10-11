@@ -234,6 +234,8 @@ ul.gifts .nm { flex: 1; min-width: 0; }
 }
 .sug { display: block; color: #7a5c14; font-size: 13px; }
 .trade { display: block; color: var(--stamp); font-size: 12.5px; margin-top: 2px; }
+.mine { display: block; color: var(--dim); font-size: 12.5px; margin-top: 2px; font-style: italic; }
+.mine { display: block; color: var(--dim); font-size: 12.5px; margin-top: 2px; font-style: italic; }
 
 /* Over-limit: pinned gifts exceed the allowance. */
 .bar.over .fill { background: var(--stamp); }
