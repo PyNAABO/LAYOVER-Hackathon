@@ -156,9 +156,8 @@ function render(): void {
         <label title="Importance, 1 to 5">★<input class="pr" type="range" min="1" max="5" value="${g.priority}" aria-label="Importance of ${esc(g.name)}, 1 to 5"><span class="prv">${g.priority}</span></label>
         <span class="status">${g.excluded ? 'Taken out' : packedIds.has(g.id) ? (g.forced ? 'Pinned' : 'In bag') : 'Left out'}</span>
         ${g.forced ? `<button class="unpin" data-id="${g.id}" title="Unpin ${esc(g.name)} — let the packer decide again">Unpin</button>` : ''}
-        ${packedIds.has(g.id) && !g.forced ? `<button class="takeout" data-id="${g.id}" title="Keep ${esc(g.name)} out of the bag">Take out</button>` : ''}
-        ${g.excluded ? `<button class="unpin" data-id="${g.id}" title="Put ${esc(g.name)} back into consideration">Put back</button>` : ''}
-        <button class="rm" title="Remove ${esc(g.name)}" aria-label="Remove ${esc(g.name)}">✕</button>
+        ${g.excluded ? `<button class="unpin" data-id="${g.id}" title="Put ${esc(g.name)} back into consideration">Put back</button>` : `<button class="rm" data-id="${g.id}" title="Keep ${esc(g.name)} out of the bag" aria-label="Take ${esc(g.name)} out of the bag">✕</button>`}
+        <button class="destroy" data-id="${g.id}" title="Delete ${esc(g.name)} for good" aria-label="Delete ${esc(g.name)}">Remove</button>
       </li>`).join('')}
     </ul>
   </section>
@@ -246,16 +245,24 @@ function wire(ordered: Gift[]): void {
       }
     };
   });
-  document.querySelectorAll<HTMLButtonElement>('.takeout, .put.back').forEach((b) => {
+  // x = keep it out of the bag (reversible). "Put back" reverses it.
+  document.querySelectorAll<HTMLButtonElement>('.rm, .put.back').forEach((b) => {
     b.onclick = () => {
       const g = gifts.find((x) => x.id === b.dataset.id);
       if (!g) return;
-      if (b.classList.contains('takeout')) {
+      if (b.classList.contains('put')) {
+        g.excluded = false;
+      } else {
         g.excluded = true;
         g.forced = false;
-      } else {
-        g.excluded = false;
       }
+      render();
+    };
+  });
+  // Remove = delete the gift outright. Distinct, labelled, styled as destructive.
+  document.querySelectorAll<HTMLButtonElement>('.destroy').forEach((b) => {
+    b.onclick = () => {
+      gifts = gifts.filter((x) => x.id !== b.dataset.id);
       render();
     };
   });
@@ -293,10 +300,7 @@ function wire(ordered: Gift[]): void {
       g.priority = Number((e.target as HTMLInputElement).value);
       render();
     };
-    (li.querySelector('.rm') as HTMLButtonElement).onclick = () => {
-      gifts = gifts.filter((x) => x.id !== id);
-      render();
-    };
+
   });
 
   // Visual-only reorder inside the packed grid: mouse drag, or ←/→ when focused.
