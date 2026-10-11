@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --paper: #f2e9d6;
+    --tag:   #faf4e4;
+    --ink:   #26291f;
+    --dim:   #6f6450;
+    --line:  #d8c9a8;
+    --case:  #1d4a33;
+    --brass: #a87f2d;
+    --stamp: #c0392b;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    width: 1280px; height: 640px; overflow: hidden; position: relative;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--paper);
+    background-image: radial-gradient(#e2d5b8 1px, transparent 1px);
+    background-size: 22px 22px;
+    color: var(--ink);
+    display: flex;
+  }
+  .left {
+    width: 52%; padding: 0 0 0 62px; position: relative; z-index: 2;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .route {
+    font: 600 14px ui-monospace, monospace; letter-spacing: .17em;
+    color: var(--dim); text-transform: uppercase;
+  }
+  h1 { font: 700 78px/0.95 Georgia, serif; letter-spacing: -0.025em; margin-top: 14px; }
+  .rule { border-top: 3px dashed var(--line); margin: 22px 0 20px; width: 400px; }
+  .tagline { font: 400 25px/1.32 Georgia, serif; width: 500px; }
+  .sub { margin-top: 16px; font-size: 15px; line-height: 1.5; color: var(--dim); width: 486px; }
+  .chips { display: flex; gap: 8px; margin-top: 26px; }
+  .chip {
+    font: 600 11.5px ui-monospace, monospace; letter-spacing: .07em;
+    text-transform: uppercase; padding: 8px 13px; border-radius: 6px;
+    background: var(--tag); border: 1.5px solid var(--line);
+  }
+  .chip.solid { background: var(--case); border-color: var(--case); color: #f4efe1; }
+
+  .right {
+    width: 48%; background: var(--case); position: relative;
+    background-image: radial-gradient(rgba(255,255,255,.055) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  .right::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg,
+      transparent 0 96px, rgba(168,127,45,.5) 96px 107px,
+      transparent 107px calc(100% - 96px), rgba(168,127,45,.5) calc(100% - 96px) calc(100% - 85px),
+      transparent calc(100% - 85px));
+  }
+  /* Precise crop of the real screenshot: suitcase measured at x 158..826,
+     y 389..730 in the 1000x1620 capture, padded to x 150..834, y 381..738. */
+  .shot {
+    position: absolute; left: 50%; top: 47%;
+    width: 520px; height: 271px;
+    transform: translate(-50%, -50%) rotate(-1.5deg);
+    background: var(--paper); border-radius: 11px; overflow: hidden;
+    box-shadow: 0 26px 56px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.10);
+  }
+  .shot img { position: absolute; left: -114px; top: -290px; width: 760px; max-width: none; }
+
+  .gift {
+    position: absolute; background: var(--tag); color: var(--ink);
+    border: 1.5px solid #d9c9a4; border-radius: 8px;
+    box-shadow: 0 10px 22px rgba(0,0,0,.32);
+    font: 700 13.5px Georgia, serif; padding: 9px 14px 9px 27px;
+  }
+  .gift::before {
+    content: ""; position: absolute; left: 10px; top: 50%; margin-top: -4px;
+    width: 8px; height: 8px; border-radius: 50%;
+    border: 2px solid #c2ad81; background: #efe4c8;
+  }
+  .gift small { display: block; font: 400 11px ui-monospace, monospace; color: var(--dim); margin-top: 2px; }
+  .g1 { left: 40px;  top: 52px;    transform: rotate(-7deg); }
+  .g2 { right: 36px; top: 38px;    transform: rotate(6deg); }
+  .g3 { left: 70px;  bottom: 48px; transform: rotate(4.5deg); }
+
+  .stamp {
+    position: absolute; left: 48.5%; top: 206px; z-index: 5;
+    transform: translateX(-50%) rotate(-11deg);
+    font: 700 23px ui-monospace, monospace; letter-spacing: .09em;
+    color: var(--stamp); border: 3.5px solid var(--stamp);
+    padding: 7px 16px; border-radius: 6px;
+    background: rgba(242,233,214,.6);
+  }
+  .foot {
+    position: absolute; left: 62px; bottom: 26px; z-index: 2;
+    font: 600 11.5px ui-monospace, monospace; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--dim);
+  }
+</style>
+</head>
+<body>
+  <div class="left">
+    <div class="route">DXB &rarr; CCJ &middot; one bag</div>
+    <h1>Gulf Box</h1>
+    <div class="rule"></div>
+    <p class="tagline">Fit every gift into one baggage allowance.</p>
+    <p class="sub">Photograph each gift, set its weight and importance, and a
+      knapsack picks the best set to pack &mdash; then names what you leave behind.</p>
+    <div class="chips">
+      <span class="chip solid">Works offline</span>
+      <span class="chip">Installable</span>
+      <span class="chip">No backend</span>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="shot"><img src="screenshot.png" alt=""></div>
+    <div class="gift g1">Medjool dates<small>2.0 kg &middot; &#9733;5</small></div>
+    <div class="gift g2">Steel dinner set<small>6.0 kg &middot; &#9733;2</small></div>
+    <div class="gift g3">Rice cooker<small>4.0 kg &middot; &#9733;2</small></div>
+  </div>
+
+  <div class="stamp">NOT PACKED</div>
+  <div class="foot">LAYOVER 2026 &middot; TinkerSpace Calicut &middot; theme: travel</div>
+</body>
+</html>
