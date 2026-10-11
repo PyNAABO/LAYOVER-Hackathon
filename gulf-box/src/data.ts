@@ -6,6 +6,7 @@ export interface Gift {
   photo?: string; // object URL
   emoji?: string; // fallback tile art
   forced?: boolean; // user pinned it into the bag
+  excluded?: boolean; // user took it out; the packer may not re-add it
 }
 
 export interface Airline {

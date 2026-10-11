@@ -61,6 +61,7 @@ function render(): void {
   const forcedIn = new Map<string, string[]>();
   if (!overLimit) {
     for (const g of leftOut) {
+      if (g.excluded) continue;
       const { evicts } = planForceIn(packed, g, limit);
       if (evicts.length) {
         forcedIn.set(g.id, evicts.map((e) => e.name));
@@ -119,14 +120,16 @@ function render(): void {
     <ul class="leftout">
       ${leftOut.map((g) => {
         const evicts = forcedIn.get(g.id);
-        return `<li>
+        const label = g.excluded ? 'Put in back' : 'Put in bag';
+        const cls = g.excluded ? 'put back' : 'put';
+        return `<li class="${g.excluded ? 'excluded-row' : ''}">
         <span class="thumb">${tileArt(g)}</span>
         <div class="lobody">
           <b>${esc(g.name)}</b> — ${g.weightKg.toFixed(1)} kg
           <span class="sug">${esc(suggest(g))}</span>
           ${evicts ? `<span class="trade">Takes out: ${esc(evicts.join(', '))}</span>` : ''}
         </div>
-        <button class="put" data-id="${g.id}" ${overLimit ? 'disabled' : ''}>Put in bag</button>
+        <button class="${cls}" data-id="${g.id}" ${overLimit && !g.excluded ? 'disabled' : ''}>${label}</button>
       </li>`;
       }).join('')}
     </ul>
@@ -146,13 +149,15 @@ function render(): void {
     </div>
     <p class="fine">Importance decides what stays in the bag when it gets tight — ★5 is "can't leave without it".</p>
     <ul class="gifts">
-      ${gifts.map((g) => `<li data-id="${g.id}" class="${packedIds.has(g.id) ? '' : 'cut'}${g.forced ? ' forced-row' : ''}">
+      ${gifts.map((g) => `<li data-id="${g.id}" class="${packedIds.has(g.id) ? '' : 'cut'}${g.forced ? ' forced-row' : ''}${g.excluded ? ' excluded-row' : ''}">
         <span class="thumb">${tileArt(g)}</span>
         <input class="nm" value="${esc(g.name)}" maxlength="40" aria-label="Gift name">
         <input class="wt" type="number" min="0.1" step="0.1" value="${g.weightKg}" aria-label="Weight in kilograms">
         <label title="Importance, 1 to 5">★<input class="pr" type="range" min="1" max="5" value="${g.priority}" aria-label="Importance of ${esc(g.name)}, 1 to 5"><span class="prv">${g.priority}</span></label>
-        <span class="status">${packedIds.has(g.id) ? (g.forced ? 'Pinned' : 'In bag') : 'Left out'}</span>
+        <span class="status">${g.excluded ? 'Taken out' : packedIds.has(g.id) ? (g.forced ? 'Pinned' : 'In bag') : 'Left out'}</span>
         ${g.forced ? `<button class="unpin" data-id="${g.id}" title="Unpin ${esc(g.name)} — let the packer decide again">Unpin</button>` : ''}
+        ${packedIds.has(g.id) && !g.forced ? `<button class="takeout" data-id="${g.id}" title="Keep ${esc(g.name)} out of the bag">Take out</button>` : ''}
+        ${g.excluded ? `<button class="unpin" data-id="${g.id}" title="Put ${esc(g.name)} back into consideration">Put back</button>` : ''}
         <button class="rm" title="Remove ${esc(g.name)}" aria-label="Remove ${esc(g.name)}">✕</button>
       </li>`).join('')}
     </ul>
@@ -241,11 +246,26 @@ function wire(ordered: Gift[]): void {
       }
     };
   });
+  document.querySelectorAll<HTMLButtonElement>('.takeout, .put.back').forEach((b) => {
+    b.onclick = () => {
+      const g = gifts.find((x) => x.id === b.dataset.id);
+      if (!g) return;
+      if (b.classList.contains('takeout')) {
+        g.excluded = true;
+        g.forced = false;
+      } else {
+        g.excluded = false;
+      }
+      render();
+    };
+  });
+  // Unpin / Put back: either way the gift returns to algorithmic control.
   document.querySelectorAll<HTMLButtonElement>('.unpin').forEach((b) => {
     b.onclick = () => {
       const g = gifts.find((x) => x.id === b.dataset.id);
       if (g) {
         g.forced = false;
+        g.excluded = false;
         render();
       }
     };

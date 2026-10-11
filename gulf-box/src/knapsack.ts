@@ -49,8 +49,12 @@ function knapsack(gifts: Gift[], limitKg: number): { packed: Gift[]; leftOut: Gi
  * algorithm fills whatever room is left with the best remaining items.
  */
 export function pack(gifts: Gift[], limitKg: number): PackResult {
-  const forced = gifts.filter((g) => g.forced);
-  const rest = gifts.filter((g) => !g.forced);
+  // Excluded gifts are out of the running entirely — no room in the bag, no
+  // matter how low their importance. Without this the user can only remove a
+  // gift by deleting it, which loses their data.
+  const excluded = gifts.filter((g) => g.excluded);
+  const forced = gifts.filter((g) => g.forced && !g.excluded);
+  const rest = gifts.filter((g) => !g.forced && !g.excluded);
   const forcedKg = forced.reduce((s, g) => s + g.weightKg, 0);
 
   // Always run the DP on the remaining room, even when that room is zero.
@@ -63,7 +67,12 @@ export function pack(gifts: Gift[], limitKg: number): PackResult {
   );
   const packed = [...forced, ...auto];
   const totalKg = packed.reduce((s, g) => s + g.weightKg, 0);
-  return { packed, leftOut, totalKg, overLimit: totalKg > limitKg };
+  return {
+    packed,
+    leftOut: [...leftOut, ...excluded],
+    totalKg,
+    overLimit: totalKg > limitKg,
+  };
 }
 
 /**

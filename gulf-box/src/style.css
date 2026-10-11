@@ -203,7 +203,7 @@ ul.gifts .wt { order: 1; flex: none; width: 62px; }
 ul.gifts li .rm { order: 2; flex: none; }
 ul.gifts li label { order: 3; flex: 1 1 100%; display: flex; align-items: center; gap: 6px; }
 ul.gifts li .status { order: 4; flex: 1 1 100%; }
-ul.gifts li .unpin { order: 5; flex: none; }
+ul.gifts li .unpin, ul.gifts li .takeout { order: 5; flex: none; }
 
 /* Wide screens: one line. */
 @media (min-width: 560px) {
@@ -248,6 +248,15 @@ ul.gifts .nm { flex: 1; min-width: 0; }
   font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
 }
 li.forced-row { background: #eef4ec; border-color: var(--ok); }
+li.excluded-row, .leftout li.excluded-row { background: #f6f0e0; border-style: dashed; }
+li.excluded-row .status { color: var(--dim); }
+.takeout, .put.back {
+  flex: none; background: transparent; border: 1.5px solid var(--line);
+  color: var(--dim); border-radius: 6px; padding: 5px 9px;
+  font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
+}
+.takeout:hover, .put.back:hover { border-color: var(--brass); color: #7a5c14; }
+.put.back { border-color: var(--ok); color: var(--ok); }
 .tile.forced { border-color: var(--brass); box-shadow: 0 0 0 1px var(--brass); }
 .pin { position: absolute; top: 2px; right: 3px; font-size: 12px; }
 
