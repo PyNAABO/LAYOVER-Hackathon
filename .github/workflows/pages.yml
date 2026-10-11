@@ -24,13 +24,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # `site/` is the committed production build and is kept byte-identical to
-      # `gulf-box/dist` (see AGENTS.md). Publishing it directly means the live
-      # site is exactly the artefact that was committed and reviewed, with no
-      # build step that can fail at deploy time.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: gulf-box/package-lock.json
+
+      # GitHub Pages serves this repo from a sub-path (/LAYOVER-Hackathon/),
+      # but every local run serves from the root. vite.config.ts reads
+      # BASE_PATH, so the hosted build is emitted for the sub-path while the
+      # committed `site/` stays root-relative for `npm run preview` and the
+      # LAN demo. Getting this wrong renders a blank page: assets are
+      # requested from /assets/... which 404s under the sub-path.
+      - name: Build for the Pages sub-path
+        working-directory: gulf-box
+        env:
+          BASE_PATH: /LAYOVER-Hackathon/
+        run: npm ci && npm run build
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: gulf-box/dist
       - id: deployment
         uses: actions/deploy-pages@v4
